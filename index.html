@@ -39,7 +39,54 @@
           <h3>
 <a id="welcome-to-project-pages" class="anchor" href="#welcome-to-project-pages" aria-hidden="true"><span class="octicon octicon-link"></span></a>Welcome to Project Pages.</h3>
 
-<p>Try it now.</p>
+<p>Here are the daily working logs. </p>
+
+<h3>
+<a id="09-24" class="anchor" href="#09-24" aria-hidden="true"><span class="octicon octicon-link"></span></a>09 24</h3>
+
+<p>11 17<br>
+总算在Linux下配好了，但生成的dot还是打不开啊。。</p>
+
+<p>11 54       把spark 的verbosse模式关了， 立马从5000+变成600条边，能打开.dot了<br>
+12 11<br>
+想找到sensitive method, 看看app context是怎么做的</p>
+
+<p>15 12   Main.py执行的第一条真正的命令是instruments<br>
+IfInstrument.jar
+java -jar IfInstrument.jar filepath platformPath libdir dirPath
+15 33   创建了主页 <a href="http://majestyhao.github.io/MyFlowAnalysis/">http://majestyhao.github.io/MyFlowAnalysis/</a>
+15 35   IfInstrument.jar不含源码， 能看出包含了FlowDroid 和weka.    </p>
+
+<p>16 01</p>
+
+<p>jar的main method由Manifest指定</p>
+
+<p>或者</p>
+
+<p>jar cfe Main.jar 
+foo.Main 
+foo/Main.class</p>
+
+<p>16 04</p>
+
+<p>Main-Class: app.IfStmtInstrument</p>
+
+<p>如何给编译好了的jar添加javadoc和source?
+<a href="http://stackoverflow.com/questions/9289617/eclipse-how-to-link-a-jar-containing-javadocs-source-with-its-binary">http://stackoverflow.com/questions/9289617/eclipse-how-to-link-a-jar-containing-javadocs-source-with-its-binary</a>
+16 47     </p>
+
+<p>Options.v().set_allow_phantom_refs(true); 大致phantom是指指向虚类的引用   </p>
+
+<p>虚类是包含虚函数的类；虚函数为了实现多态，在动态连编时(即在compiling时载入.class)选择合适的成员函数。纯虚函数（在基类）没有实现，是为接口。
+17 31     </p>
+
+<p>transform可以看成（在method body）的任何操作，不仅局限于IR之间的转换</p>
+
+<p>17 41</p>
+
+<p>Util.Switch()用于实现visitor design pattern</p>
+
+<p><a href="https://en.wikipedia.org/wiki/Visitor_pattern">https://en.wikipedia.org/wiki/Visitor_pattern</a></p>
         </article>
       </div>
     </div>
