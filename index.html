@@ -42,6 +42,214 @@
 <p>Here are the daily working logs. </p>
 
 <h3>
+<a id="09-29" class="anchor" href="#09-29" aria-hidden="true"><span class="octicon octicon-link"></span></a>09 29</h3>
+
+<p>10 08   继续MyTest<br>
+比原FlowDroid多了个permissionAnalysis。
+其中第一句是MySetupApplication
+10 54
+MySetupApplication中的calculateSourcesSinksEntrypoints
+包含了
+1.从manifest.xml获得了包含entry point的所有类（是一个xml parser, 寻找类是activities, providers, services, receivers的加入）
+2. 从resources.arsc获得资源列表
+3. 
+11 08
+calculateCallbackMethodshanshu
+<a href="https://github.com/param" class="user-mention">@param</a> parser of resources.arsc
+0. 在AppContext里用来表示UIlayout的对象也是从resParser从提取，而FlowDroid是直接传入
+1. create the new iteration of the main method
+soot.G.reset();
+initializeSoot();
+createMainMethod();</p>
+
+<p>14 24
+2. 创建JimpleClass(entrypointClasses), 调用jimpleClass.collectCallBackMethods来获得写在source code里的call backs</p>
+
+<p>transform定义（重载）后，用  PackManager.v().getPack("wjtp").add(transform);加入到Soot执行过程中；再由 PackManager.v().getPack("wjtp").apply();运行
+collectCallBacks是发生在wjtp.ajc的一次transformation(操作)， 把只要是entryPointClasses下的method全部找出来</p>
+
+<p>因为call backs分为life-cycle和事件两种， entry points即life-cycle, 由于Android没有main函数，任何life-cycle都可以是入口</p>
+
+<p>// Find the user-defined sources in the layout XML files. 
+lfp.parseLayoutFile(apkFileLocation, entrypoints);</p>
+
+<p>14 34
+FlowDroid paper是这么形容怎么找callbacks(此处不包含life cycle的call back)的</p>
+
+<ol>
+<li><p>对每个component(四大)建立一张call graph</p></li>
+<li><p>扫描call graph中的android 系统函数，如果系统函数接收了已知的（通过一个txt定义了的）callback 接口作为参数，则把callback接口下重载了函数作为callback methods加入存放callback method 的map。</p></li>
+</ol>
+
+<p>call backs回调函数究竟是什么？
+实际上和visiting patter中监视器原理一样的，Observer在Subject那里注册了自己的函数(即call back)， 当Subject的特定行为发生后，即调用Observer的call back函数。</p>
+
+<p>但为了符合设计模式的与接口沟通而不是直接与对象的成员，于是call back函数被写到代表这一call back的interface里，每次注册新的call back函数时先实例化call back接口并重载“真正的”call back函数。如view.OnClickListener是一个接口，它包含了需要重载的call back函数onClick()。
+call back接口会作为Subject(如button)的call back接收函数（call back handler）的参数。
+16 44
+FlowDroid 最先通过ProcessManifest解析Manifest.xml，从中能提取出四大components中包含的类名, 并把它们加入到entry points</p>
+
+<p>components 用xml 的tag来识别
+17 46
+在jimpleClasses为空时创建jimpleClasses, 调用collectCallBacks()；当不为空即循环已经开始后，调用Incremental().<br>
+Incremental()和非incre的区别: 前者使用了worklist算法（一个queue）.</p>
+
+<p>worklist algo: 
+init queue with start point, pop top element from queue and (re-)compute it. If it changes then enqueue all points that dep on its value; stop when queue is empty
+18 22</p>
+
+<p>getSootClass(class) 把指定class转成SootClass: Soot内部表示Class的数据结构
+19 28
+虽然找到了callbacks寻找算法的不断更新点，但还是不理解为什么新发现的callback能作为入口能引入新的callback  </p>
+
+<h3>
+<a id="09-28" class="anchor" href="#09-28" aria-hidden="true"><span class="octicon octicon-link"></span></a>09 28</h3>
+
+<p>09 14<br>
+java序列化java.io.Serializable</p>
+
+<p>原理类似swap, 即内存存不下的对象，先按序存到硬盘中；后再依次读出
+09 16
+visitor design pattern观察者模式: 判断语句类型
+apply接收StmtSwitch的派生类对象作为参数
+apply的派生类具体实现 e.g. 
+public void apply(Switch sw)
+{
+((StmtSwitch) sw).caseIfStmt(this);
+}
+当unit实际的派生类为JIfStmt时，调用apply会告诉sw“我”(this)是if语句
+使用寻找class hier功能；找到了所有可能的派生类。</p>
+
+<p>当是if语句时直接调用了 ((StmtSwitch) sw).caseIfStmt(this);
+而caseIfStmt(IfStmt stmt) 又被IfInstrument重载
+10 15
+分析完if语句的相关嵌入代码，剩下的tableswitch等都是类似的 
+table switch是什么语句？
+10 18
+看来tableswitch指的是<a href="https://en.wikipedia.org/wiki/Branch_table">https://en.wikipedia.org/wiki/Branch_table</a><br>
+并不存在于高级语言中，多用于编译器后端的优化。和case-switch类似是个多路选择跳转。
+10 29
+代码同样存在大量的复制粘贴现象=。=<br>
+复用不够啊
+10 38
+instrumentMain(String[] args)和main(String[] args)基本一样
+为毛要复制一遍
+11 22
+Instead of using soot.Main.main(args);, We can use PackManager.v().runPacks(); PackManager.v().writeOutput(); to first set all the configuration, then run soot.
+Wei Yang的个人日志主页记录了他开发的一些细节
+<a href="http://publish.illinois.edu/weiyang-david/mumbling/">http://publish.illinois.edu/weiyang-david/mumbling/</a>
+比如
+[Log] Using soot to get callgraph:</p>
+
+<ol>
+<li><p>Default CG algorithm + Add new SceneTransformer() {…}</p></li>
+<li><p>Spark + runPacks</p></li>
+</ol>
+
+<p>all with repackaged jar.</p>
+
+<p>11 41
+appcontext的ifstmt和官方教程嵌入实现方式没啥区别。只不过这里只关注if语句。因为paper里定义的context指的即if语句中出现过得变量。也就是说嵌入完成后，app运行时每次遇到了if，就把出现的变量值传进app.DummyClass，也就是嵌入进的函数，作处理。不过这个DummyClass并没有写什么东西啊(难道是反xx不完全？)。<br>
+<a href="http://blog.csdn.net/zlp1992/article/details/42463463">http://blog.csdn.net/zlp1992/article/details/42463463</a>
+是一篇官方嵌入教程的翻译稿，里头有句/设置允许伪类（Phantom class），指的是soot为那些在其classpath找不到的类建立的模型 。
+对java 编译过程不大了解，不知道抽象类是否包含在里头（似乎是包含的）。</p>
+
+<p>什么是嵌入（instrument）?即在源码中插入代码。使得程序执行时会运行我们插入的代码，达到监测程序运行的目的。
+11 51
+ECS 223 
+<a href="http://mediasite.ucdavis.edu/Mediasite/Catalog/Full/56ee0e1187b64815b6c9d0a8febe98ce21">http://mediasite.ucdavis.edu/Mediasite/Catalog/Full/56ee0e1187b64815b6c9d0a8febe98ce21</a>
+11 59
+现在想知道
+. 如何通过psout找到敏感函数
+. 如何具体通过敏感函数提取context</p>
+
+<p>继续分析main.py
+现在已经知道
+1. 如何生成call graph
+2. 如何进行嵌入；并且app context严重依赖嵌入
+12 07
+Main.py 执行流程：
+1. IfInstrument
+2. apktool解开app并把delvik bytecode -&gt; smali
+3. dare：把.dek -&gt; .class
+4. ICC: epicc.jar处理inter-component communication
+5. Main.jar</p>
+
+<p>12 14
+导入epicc.jar，找到运行此jar的入口
+怎么会是Main-Class: org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader。。
+12 20
+相比原生flowdroid, 多了soot.jimple.interproc.cc</p>
+
+<p>原来epicc是来自于
+<a href="http://siis.cse.psu.edu/epicc/installation.html">http://siis.cse.psu.edu/epicc/installation.html</a>
+和Dare是一个组做的
+真正的入口应该是Rsrc-Main-Class: soot.jimple.interproc.cc.Main</p>
+
+<p>不知Rsrc-Main和Main-Class有啥区别
+12 28
+导入Main.jar
+怎么和IfInstrument大小一样？
+测下md5
+md5 不一样。还是有点区别的。</p>
+
+<p>大致做成jar的时候类全部导进去了。。</p>
+
+<p>证实了我的想法，main函数参数如果是instrument则执行instrument, 否则是factor时则跑MyTest。。
+Main-Class: app.Main</p>
+
+<p>IfStmtInstr的入口
+Main-Class: app.IfStmtInstrument
+12 37
+运行主要流程主要在MyTest里， 看到了Pscout, 解决的答案大致在这里了。</p>
+
+<p>15 17<br>
+<a href="http://blog.csdn.net/mao1055229269/article/details/25827435">http://blog.csdn.net/mao1055229269/article/details/25827435</a>
+批量删注释的方法
+17 16
+代码片段丢失。尝试了不同反xx软件后，还是会到了原点。
+发信问了Wei Yang。
+17 29 
+特别诡异的冲突， ConditionalResultsAvailableHandler 
+先搁置。。
+17 56
+为什么他的能直接调用基类private成员<br>
+比如printUsage()
+18 17
+直接把Test.java复制过来
+用JD反xx出来的和源码比较，发现准确率很高。除了多余的信息需要删除外，不需要额外添加。</p>
+
+<p>可能缺final；
+大段空白由于多行的变成了一行。
+18 46 
+原来他把原文件中的private改成了protected，所以才能访问。    </p>
+
+<h3>
+<a id="09-25" class="anchor" href="#09-25" aria-hidden="true"><span class="octicon octicon-link"></span></a>09 25</h3>
+
+<p>08 44 
+设计模式</p>
+
+<p>15 57<br>
+看完OO Design前14章 </p>
+
+<p>19 17
+java序列化java.io.Serializable</p>
+
+<p>个大的应用程序需要保存很多对象的时候，由于虚拟机内存有限，(资源宝贵啊  )有时不可能所有有用的对象都放到内存中，因此，需要将不常用的对象暂时持久化的文件中，当需要这个对象时，再从文件把对象恢复到内存中，这就是所谓对象的序列化和反序列化。</p>
+
+<p>19 52
+多态的体现: 在扫描检查每条指令时，用的是抽象基类Unit。它的实际派生类可以是任意代表指令类型的类
+visitor design pattern观察者模式: 判断语句类型
+apply接收StmtSwitch的派生类对象作为参数
+apply的派生类具体实现 e.g. 
+public void apply(Switch sw)
+{
+((StmtSwitch) sw).caseIfStmt(this);
+}
+当unit实际的派生类为JIfStmt时，调用apply会告诉sw“我”(this)是if语句</p>
+
+<h3>
 <a id="09-24" class="anchor" href="#09-24" aria-hidden="true"><span class="octicon octicon-link"></span></a>09 24</h3>
 
 <p>11 17<br>
