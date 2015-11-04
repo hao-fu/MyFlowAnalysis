@@ -42,6 +42,64 @@
 <p>Here are the daily working logs. </p>
 
 <h3>
+<a id="11-03" class="anchor" href="#11-03" aria-hidden="true"><span class="octicon octicon-link"></span></a>11 03</h3>
+
+<p>15 45UML目标驱动:
+找到所有的敏感permission并追踪到触发permission的ui components
+1. 找到所有敏感permission: PscoutMethod
+2. 追踪到触发UI18 25AppContext是1. 如何找到所有permission的
+２. 如何追踪到所有context的</p>
+
+<p>18 27MyMainTest.Main: runAnalysis用于调用taint analysis相比Test.Main(): 
+1. Taint Analysis保留，除了少了repeat count
+2. 多了permission analysis()18 47permission analysis: analyzeCGanalyzeCG: bfs遍历call graph，如果发现敏感方法，把它映射到permission, 加到perInvoc中18 58setContext没发现被谁调用了
+19 02isSameStmt在analyzeFlowResult中出现了
+19 16跑了下app context~/workspace/AppContext$ python Main.py ApkSamples /home/hao/Android/Sdk/platforms
+没有结果
+为什么会出现None None19 29AppContext里的dare无法运行，去官网下了个替换后好了但是FactorResult还是空空如也
+发现了错误文件　insufficient memory for the Java Runtime Environment to continue
+难怪跑不了，main上写的是40G内存空间19 36跑一下
+19 40Unable to open '/home/hao/workspace/AppContext/Instrument/InstrumentedApp/ApkSamples/de.robv.android.xposed.installer_v33_36570c.apk' as zip archive
+在retargeting阶段报错，不知是dare的问题还是怎么的</p>
+
+<p>等等　这目录不对啊
+19 41
+/InstrumentedApp/ApkSamples下发现了错误文件
+Android platform directory you havespecified (/home/hao/Android/Sdk/platform) does not exist
+看来android platform没指定对19 49dare必须得是android-15, 把16重命名为１５看下效果
+20 34None None和０是调用Command类输出的０表示没有错误</p>
+
+<p>20 37AppContext输入apk -ifstmtinstrument-&gt; 嵌入代码了的apk --apktool-&gt; .dex --dare-&gt; .class --ICC-&gt; --factor-&gt; output.csv, CG2.log 
+21 02ICC那块报错</p>
+
+<h3>
+<a id="10-01" class="anchor" href="#10-01" aria-hidden="true"><span class="octicon octicon-link"></span></a>10 01</h3>
+
+<p>08 58为什么callbacks能不断推进？ paper里解释"since callback handlers are free to register new callbacks on their own"不在这上面浪费时间了。流程大致是一个worklist算法：初始时扫描app（从resource.arsc里）四大组件包含的类里的callback并存到queue里。每次对queue里存的callback method寻找可抵达的新callback函数，找到后加到queue里作为下次寻找可抵达函数的入口。循环直到queue为空。
+09 19
+SetupApplication.calculateSourcesSinksEntrypoints
+整体流程: setup app路径，lib jar等 -&gt; 
+09 36 
+Options用于Soot cmd 选项设置</p>
+
+<p>09 58
+appcontext前面和flowdroid一样，只是在运行完taint analysis后，增加了一个permissionAnalysis
+permissionAnalysis主体是一个发生在wjtp.checkCG的transform，即基于call graph的操作。核心函数是analyzeCG().</p>
+
+<p>10 01
+SootMethod和MethodOrMethodContext有啥区别？</p>
+
+<p>10 28<br>
+analyzeCG() 遍历call graph里所有边，如果发现了包含在了Pscount的敏感函数就新建一个相应PermissionInvocation。如果此perInvoc没有分析过（有个list存分析过得），即调用analyzeFlowResult进行分析PermissionInvocation是敏感函数的wrapper14 14
+这段的context指的是啥</p>
+
+<p>14 46
+Context是在printCFGpath赋值的，位于analyzeCG里，差点漏了过去有两个cfg, 一个cfg一个icfg, 貌似分别对应inner和inter
+15 11
+analyzeCG iterate edge，并对每条edge调用printCFGPath, 在printCFGPath内部则检查关联入边的语句, 对每条语句再调用多态的printCFGpath 
+在对于unit的printCFGpath内，创建了两个Queue, 分别存语句和入边所代表的函数。</p>
+
+<h3>
 <a id="09-29" class="anchor" href="#09-29" aria-hidden="true"><span class="octicon octicon-link"></span></a>09 29</h3>
 
 <p>10 08   继续MyTest<br>
