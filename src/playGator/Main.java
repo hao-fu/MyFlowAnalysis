@@ -19,6 +19,7 @@ public class Main {
 		presto.android.Main.checkAndPrintEnvironmentInformation(args);
 	}
 
+	// TODO more args
 	public static void parseArgs(String[] args) {
 		for (int i = 0; i < args.length; i++) {
 			String arg = args[i];
@@ -27,6 +28,8 @@ public class Main {
 				Configs.project = args[++i];
 			} else if ("-sdk".equals(arg)) {
 				Configs.sdkDir = args[++i];
+			} else if ("-guiAnalysis".equals(arg)) {
+				Configs.guiAnalysis = true;
 			}
 		}
 	}
