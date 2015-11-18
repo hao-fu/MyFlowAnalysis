@@ -37,6 +37,9 @@ public class Main {
 						+ "/home/hao/Android/Sdk/platforms/android-17/android.jar",
 				"-apiLevel", "17",
 				"-jre", "/home/hao/workspace/gator-3.0/AndroidBench/platform/android-17/core.jar",
+				"-benchmarkName", "Button1",
+				"-listenerSpecFile", "/home/hao/workspace/gator-3.0/SootAndroid/listeners.xml",
+				"-wtgSpecFile", "/home/hao/workspace/gator-3.0/SootAndroid/wtg.xml",
 				"-guiAnalysis",
 		};
 		for (int i = 0; i < args.length; i++) {
@@ -57,6 +60,13 @@ public class Main {
 				Configs.apiLevel = args[++i];
 			} else if ("-jre".equals(arg)) {
 				Configs.jre = args[++i];
+			} else if ("-benchmarkName".equals(arg)) {
+				// The app name.
+				Configs.benchmarkName = args[++i];
+			} else if ("-listenerSpecFile".equals(arg)) {
+				Configs.listenerSpecFile = args[++i];
+			} else if ("-wtgSpecFile".equals(arg)) {
+				Configs.wtgSpecFile = args[++i];
 			} else {
 				throw new RuntimeException("Unknow option: " + arg);
 			} 
