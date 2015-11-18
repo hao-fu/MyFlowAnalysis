@@ -16,11 +16,29 @@ public class Main {
 	public static void main(String[] args) {
 		Debug.v().setStartTime();
 		parseArgs(args);
+		System.out.println("finish parsing args!");
 		presto.android.Main.checkAndPrintEnvironmentInformation(args);
+		System.out.println("finish check and print print env info!");
+		setupAndInvokeSoot();
 	}
 
 	// TODO more args
 	public static void parseArgs(String[] args) {
+		args = new String[] {
+				"-project", "/home/hao/workspace/ApkSamples/Decompiled/app-debug.apk",
+				"-sdk", "/home/hao/Android/Sdk",
+				"-android", "/home/hao/workspace/gator-3.0/AndroidBench/platform/android-17/framework.jar:"
+						+ "/home/hao/workspace/gator-3.0/AndroidBench/platform/android-17/bouncycastle.jar"
+						+ "/home/hao/workspace/gator-3.0/AndroidBench/platform/android-17/ext.jar:"
+						+ "/home/hao/workspace/gator-3.0/AndroidBench/platform/android-17/android-policy.jar:"
+						+ "/home/hao/workspace/gator-3.0/AndroidBench/platform/android-17/:services.jar:"
+						+ "/home/hao/workspace/gator-3.0/SootAndroid/deps/annotations.jar:"
+						+ "/home/hao/workspace/gator-3.0/SootAndroid/deps/android-support-v4.jar:"
+						+ "/home/hao/Android/Sdk/platforms/android-17/android.jar",
+				"-apiLevel", "17",
+				"-jre", "/home/hao/workspace/gator-3.0/AndroidBench/platform/android-17/core.jar",
+				"-guiAnalysis",
+		};
 		for (int i = 0; i < args.length; i++) {
 			String arg = args[i];
 			if ("-project".equals(arg)) {
@@ -30,11 +48,24 @@ public class Main {
 				Configs.sdkDir = args[++i];
 			} else if ("-guiAnalysis".equals(arg)) {
 				Configs.guiAnalysis = true;
-			}
+			} else if ("-android".equals(arg)) {
+				// To read in platformJar
+				Configs.android = args[++i];
+			} else if ("-verbose".equals(arg)) {
+				Configs.verbose = true;
+			} else if ("-apiLevel".equals(arg)) {
+				Configs.apiLevel = args[++i];
+			} else if ("-jre".equals(arg)) {
+				Configs.jre = args[++i];
+			} else {
+				throw new RuntimeException("Unknow option: " + arg);
+			} 
 		}
+		
+		Configs.processing();
 	}
 
-	public static void setupSoot() {
+	public static void setupAndInvokeSoot() {
 		String classpath = presto.android.Main.computeClasspath();
 		String packName = "wjtp";
 		String phaseName = "wjtp.gui";
