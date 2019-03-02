@@ -1,4 +1,5 @@
-Citing our paper is welcomed, if you find my article or code: helpful:
+Citing our paper is welcomed, if you find my article or code helpful:
+```
 @inproceedings{fu2017leaksemantic,
   title={Leaksemantic: Identifying abnormal sensitive network transmissions in mobile applications},
   author={Fu, Hao and Zheng, Zizhan and Bose, Somdutta and Bishop, Matt and Mohapatra, Prasant},
@@ -7,3 +8,4 @@ Citing our paper is welcomed, if you find my article or code: helpful:
   year={2017},
   organization={IEEE}
 }
+```
