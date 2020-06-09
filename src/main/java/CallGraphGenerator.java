@@ -39,6 +39,7 @@ public class CallGraphGenerator {
         String fileNameWithOutExt = FilenameUtils.removeExtension(dest);
         String destination = "./sootOutput/" + fileNameWithOutExt;
         dot.plot(destination + DOT_EXTENSION);
+        System.out.println("test");
     }
 
     /**
